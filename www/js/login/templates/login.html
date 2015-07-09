@@ -1,0 +1,22 @@
+<section class="login-container" ng-class="{signin: login.signin, signup: !login.signin }">
+
+  <nav class="nav-tabs">
+    <a href="" class="signin" ng-class="{active: login.signin}" ng-click="login.signin = true">
+      <span>Connexion</span></a>
+    <a href="" class="signup" ng-class="{active: !login.signin}" ng-click="login.signin = false">
+      <span>Nouveau compte</span>
+    </a>
+  </nav>
+
+  <a ui-sref="home" class="logo"></a>
+
+  <form
+    name="signin"
+    class="form"
+    ng-submit="login.signForm()"
+    novalidate
+    ng-include="'js/login/templates/user.form.html'">
+
+  </form>
+
+</section>

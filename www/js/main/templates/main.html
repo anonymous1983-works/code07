@@ -1,0 +1,46 @@
+<section class="map-container">
+
+  <header class="main-header">
+    <div class="header-left">
+      <a class="logo" ui-sref="home"></a>
+    </div>
+
+
+    <div class="header-right">
+      <nav class="nav">
+        <ul>
+          <li>
+            <a href="" ng-click="main.accountOpen = !main.accountOpen">
+              <span>Compte</span>
+              <i class="fa"
+                ng-class="{'fa-bars': !main.accountOpen, 'fa-close': main.accountOpen}">
+              </i>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <map input="main.users" owner="main.owner"></map>
+
+  <div class="popup" ng-show="main.accountOpen">
+    <div class="popup-bg popup-ready"></div>
+
+    <div class="form-account">
+
+      <form
+        name="signin"
+        class="form"
+        ng-submit="main.signForm()"
+        novalidate
+        ng-include="'js/login/templates/user.form.html'">
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+</section>
