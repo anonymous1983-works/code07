@@ -3,8 +3,8 @@
 (function() {
 
   angular.module('carApp')
-    .directive('map', ['$timeout', '$compile', 'MapOptions', 'GeocodeFactory',
-    function($timeout, $compile, MapOptions, GeocodeFactory) {
+    .directive('map', ['$timeout', '$compile', '$q', 'MapOptions', 'GeocodeFactory',
+    function($timeout, $compile, $q, MapOptions, GeocodeFactory) {
 
       return {
         restrict: 'E',
@@ -19,6 +19,7 @@
           var map;
           var unbindMarkers = [];
           var infoWindow;
+          var markerOwner;
 
           var dir = {
 
@@ -39,7 +40,9 @@
                 angular.forEach(scope.input, function(user) {
                   dir.setMarker(user);
                 });
-                dir.setMarker(scope.owner);
+                dir.setMarker(scope.owner).then(function(marker) {
+                  markerOwner = marker;
+                });
               });
             },
 
@@ -53,22 +56,31 @@
             },
 
             getIcon: function(marker) {
+              var vehicleType;
+              if (marker.driver) {
+                vehicleType = marker.driver.vehicleType === 'moto' ?
+                  'motorcycle' :
+                  'car';
+              }
+
+              var basePath = 'img/icons/';
+
               if(scope.owner.type === 'proposer') {
                 return marker.type === 'proposer' ?
-                  'icone-car-darck.png' :
-                  'icone-member.light.min.png';
+                  basePath + 'icone-' + vehicleType + '.dark.png' :
+                  basePath + 'icone-member.light.min.png';
               } else {
                 return marker.type === 'chercher' ?
-                  'icone-member.light.png' :
-                  'icone-car.darck.min.png';
+                  basePath + 'icone-member.light.png' :
+                  basePath + 'icone-' + vehicleType + '.dark.min.png';
               }
             },
 
             setMarker: function(marker) {
-
+              var defer = $q.defer();
               var here = dir.formatAddress(marker);
               var image = {
-                url: 'img/icons/' + dir.getIcon(marker)
+                url: dir.getIcon(marker)
               };
 
               GeocodeFactory.getLocation(here).then(function(res) {
@@ -92,7 +104,11 @@
                     infoWindow.open(map, myMarker);
                   })
                 );
+
+                defer.resolve(myMarker);
               });
+
+              return defer.promise;
             },
 
             setInfoWindow: function() {
@@ -100,6 +116,21 @@
             }
 
           };
+
+          scope.$watch('owner', function() {
+
+            // object not set yet
+            if(!markerOwner) { return; }
+
+            // apply new address and position
+            var here = dir.formatAddress(scope.owner);
+            GeocodeFactory.getLocation(here).then(function(res) {
+              markerOwner.setPosition(res.geometry.location);
+            });
+
+            // apply new marker icon
+            markerOwner.setIcon({url: dir.getIcon(scope.owner)});
+          });
 
           scope.$on('$destroy', function() {
             angular.forEach(unbindMarkers, function(marker) {

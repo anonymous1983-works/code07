@@ -1,9 +1,9 @@
 'use strict';
 
-(function() {
+(function () {
 
   angular.module('carApp')
-    .directive('amPopupmap', [function() {
+    .directive('amPopupmap', [function () {
 
       return {
         restrict: 'E',
@@ -11,11 +11,6 @@
         templateUrl: 'js/main/templates/popup.map.html',
         scope: {
           data: '='
-        },
-        link: function(scope, elem) {
-
-
-
         }
       };
 

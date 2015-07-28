@@ -3,8 +3,8 @@
 (function() {
 
   angular.module('carApp')
-    .factory('LoginFactory', ['$state', '$window', '$q', 'Fire', 'UserFactory',
-    function($state, $window, $q, Fire, UserFactory) {
+    .factory('LoginFactory', ['$q', '$timeout', 'Fire', 'UserFactory',
+    function($q, $timeout, Fire, UserFactory) {
 
       var log = {
 
@@ -18,8 +18,8 @@
               function() {
                 defer.resolve('signed in');
               },
-              function() {
-                defer.reject('wrong creds');
+              function(msg) {
+                defer.reject(msg);
               });
           } else {
 
@@ -32,8 +32,8 @@
                   });
                 });
               },
-              function(error) {
-                defer.reject('Error creating user:', error);
+              function(msg) {
+                defer.reject(msg);
               });
 
           }
@@ -51,7 +51,7 @@
             password : creds.password
           }, function(error, userData) {
             if (error) {
-              defer.reject(error);
+              defer.reject(error.message);
             } else {
               defer.resolve(userData.uid);
             }
@@ -63,7 +63,6 @@
         addUserData: function(type, form, uid) {
           var defer = $q.defer();
 
-          form.common.address = null;
           var obj = {
             uid: uid,
             email: form.signin.email,
@@ -75,14 +74,16 @@
             obj = angular.extend(obj, {driver: form.driver});
           }
 
-          var child = Fire.db.child('people');
-          child.push(obj, function(error) {
-            if (error) {
-              defer.reject('');
-            } else {
-              UserFactory.setCurrentUser(obj);
-              defer.resolve('');
-            }
+          $timeout(function() {
+            var child = Fire.db.child('people');
+            child.push(obj, function(error) {
+              if (error) {
+                defer.reject(error.message);
+              } else {
+                UserFactory.setCurrentUser(obj);
+                defer.resolve('');
+              }
+            });
           });
 
           return defer.promise;
@@ -97,7 +98,7 @@
             password : creds.password
           }, function(error, authData) {
             if (error) {
-              defer.reject(error);
+              defer.reject(error.message);
             } else {
               Fire.owner = {
                 uid: authData.uid

@@ -62,7 +62,6 @@
             angular.forEach(res.val(), function(res, key) {
               var owner = db.child(key);
 
-              data.common.address = null;
               var updateObj = {
                 common: data.common
               };
@@ -75,6 +74,11 @@
                 if(error) {
                   defer.reject(error);
                 } else {
+                  Fire.owner.common = data.common;
+                  if(data.driver) {
+                    Fire.owner.driver = data.driver;
+                  }
+                  usr.setCurrentUser(Fire.owner);
                   defer.resolve('done');
                 }
               });

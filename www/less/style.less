@@ -8,18 +8,23 @@
 @import "import/form";
 @import "import/map";
 @import "import/popup";
+@import "import/tips";
 
 @import "import/include/header";
 @import "import/include/home";
 @import "import/include/login";
 
-html, body, main{
+html, body, main {
   width: 100%;
   height: 100%;
-  position: relative;
+  overflow: hidden;
   color: @theme-color-map;
   font-family: @base-font-family;
   font-weight: @base-font-weight-light;
 
   background:@base-color-white url('../img/bg/bg.jpg') 50% 50% no-repeat;
+
+  @media @base-media-extra-small {
+    font-size: 12px;
+  }
 }

@@ -23,10 +23,12 @@
             $scope.login.form
           ).then(
             function() {
-              $state.go('main', {type: $state.params.type});
+              $state.go('main');
             },
-            function(error) {
+            function() {
 
+              // redirects to signup if login error
+              $scope.login.signin = false;
             }
           );
 
